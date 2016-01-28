@@ -1,4 +1,9 @@
-### Installation
+# README #
+3D Modeling of a Scene with an Autonomous Robot
+
+With the current study, an autonomous robots was produced at a reasonable cost compared to other industrial robots serving for the same purpose and also a 3 dimensional modeling system that was created using an algorithm was integrated on this robot. In doing so, it was aimed to create a 3 dimensional model of the scene where the autonomous robot was located.
+
+# Installation #
 
 ### Dependencies ###
 

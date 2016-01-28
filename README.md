@@ -9,7 +9,7 @@ With the current study, an autonomous robots was produced at a reasonable cost c
 
 #### Required ####
 
-* TooN: maths library.
+* TooN 2.2 : maths library.
 * CMake 2.8+ : building tool.
 
 ##### Install TooN and CMake#####

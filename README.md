@@ -74,4 +74,4 @@ CMAKE_PREFIX_PATH=~/.local/qt/ make
 https://www.youtube.com/playlist?list=PLypuuLR3edvwKqh6rEV9eOwGTwQGu1oQ9
 
 ##### Note
-This project is adapted from SLAMBench Project. Please, visit https://github.com/pamela-project/slambench for more information
+This project was adapted from SLAMBench Project. Please, visit https://github.com/pamela-project/slambench for more information

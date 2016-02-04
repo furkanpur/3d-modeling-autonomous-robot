@@ -52,7 +52,7 @@ cl_kernel renderVolume_ocl_kernel;
 cl_kernel renderLight_ocl_kernel;
 cl_kernel renderTrack_ocl_kernel;
 cl_kernel renderDepth_ocl_kernel;
-cl_kernel initVolume_ocl_kernel;
+
 // reduction parameters
 static const size_t size_of_group = 64;
 static const size_t number_of_groups = 8;
@@ -66,8 +66,6 @@ void init() {
 
 void clean() {
 	opencl_clean();
-
-
 }
 
 void Kfusion::languageSpecificConstructor() {
@@ -77,7 +75,6 @@ void Kfusion::languageSpecificConstructor() {
 	ocl_FloatDepth = clCreateBuffer(context, CL_MEM_READ_WRITE,
 			sizeof(float) * computationSize.x * computationSize.y, NULL,
 			&clError);
-	checkErr(clError, "clCreateBuffer");
 	ocl_ScaledDepth = (cl_mem*) malloc(sizeof(cl_mem) * iterations.size());
 	ocl_inputVertex = (cl_mem*) malloc(sizeof(cl_mem) * iterations.size());
 	ocl_inputNormal = (cl_mem*) malloc(sizeof(cl_mem) * iterations.size());
@@ -86,33 +83,26 @@ void Kfusion::languageSpecificConstructor() {
 		ocl_ScaledDepth[i] = clCreateBuffer(context, CL_MEM_READ_WRITE,
 				sizeof(float) * (computationSize.x * computationSize.y)
 						/ (int) pow(2, i), NULL, &clError);
-			checkErr(clError, "clCreateBuffer");
 		ocl_inputVertex[i] = clCreateBuffer(context, CL_MEM_READ_WRITE,
 				sizeof(float3) * (computationSize.x * computationSize.y)
 						/ (int) pow(2, i), NULL, &clError);
-			checkErr(clError, "clCreateBuffer");
 		ocl_inputNormal[i] = clCreateBuffer(context, CL_MEM_READ_WRITE,
 				sizeof(float3) * (computationSize.x * computationSize.y)
 						/ (int) pow(2, i), NULL, &clError);
-			checkErr(clError, "clCreateBuffer");
 	}
 
 	ocl_vertex = clCreateBuffer(context, CL_MEM_READ_WRITE,
 			sizeof(float3) * computationSize.x * computationSize.y, NULL,
 			&clError);
-		checkErr(clError, "clCreateBuffer");
 	ocl_normal = clCreateBuffer(context, CL_MEM_READ_WRITE,
 			sizeof(float3) * computationSize.x * computationSize.y, NULL,
 			&clError);
-		checkErr(clError, "clCreateBuffer");
 	ocl_trackingResult = clCreateBuffer(context, CL_MEM_READ_WRITE,
 			sizeof(TrackData) * computationSize.x * computationSize.y, NULL,
 			&clError);
-		checkErr(clError, "clCreateBuffer");
 
 	ocl_reduce_output_buffer = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
 			32 * number_of_groups * sizeof(float), NULL, &clError);
-		checkErr(clError, "clCreateBuffer");
 	reduceOutputBuffer = (float*) malloc(number_of_groups * 32 * sizeof(float));
 	// ********* BEGIN : Generate the gaussian *************
 	size_t gaussianS = radius * 2 + 1;
@@ -124,15 +114,13 @@ void Kfusion::languageSpecificConstructor() {
 	}
 	ocl_gaussian = clCreateBuffer(context, CL_MEM_READ_ONLY,
 			gaussianS * sizeof(float), NULL, &clError);
-		checkErr(clError, "clCreateBuffer");
 	clError = clEnqueueWriteBuffer(commandQueue, ocl_gaussian, CL_TRUE, 0,
 			gaussianS * sizeof(float), gaussian, 0, NULL, NULL);
-		checkErr(clError, "clEnqueueWrite");
 	free(gaussian);
 	// ********* END : Generate the gaussian *************
 
 	// Create kernel
-	initVolume_ocl_kernel = clCreateKernel(program,
+	cl_kernel initVolume_ocl_kernel = clCreateKernel(program,
 			"initVolumeKernel", &clError);
 	checkErr(clError, "clCreateKernel");
 
@@ -140,7 +128,7 @@ void Kfusion::languageSpecificConstructor() {
 			sizeof(short2) * volumeResolution.x * volumeResolution.y
 					* volumeResolution.z,
 			NULL, &clError);
-	checkErr(clError, "clCreateBuffer");
+
 	clError = clSetKernelArg(initVolume_ocl_kernel, 0, sizeof(cl_mem),
 			&ocl_volume_data);
 	checkErr(clError, "clSetKernelArg");
@@ -152,6 +140,7 @@ void Kfusion::languageSpecificConstructor() {
 			NULL, globalWorksize, NULL, 0, NULL, NULL);
 	checkErr(clError, "clEnqueueNDRangeKernel");
 
+	RELEASE_KERNEL(initVolume_ocl_kernel);
 
 	//Kernels
 	mm2meters_ocl_kernel = clCreateKernel(program, "mm2metersKernel", &clError);
@@ -192,82 +181,61 @@ Kfusion::~Kfusion() {
 	if (reduceOutputBuffer)
 		free(reduceOutputBuffer);
 	reduceOutputBuffer = NULL;
+	if (ocl_FloatDepth)
+		clReleaseMemObject(ocl_FloatDepth);
+	ocl_FloatDepth = NULL;
 
 	for (unsigned int i = 0; i < iterations.size(); ++i) {
-	  if (ocl_ScaledDepth[i]) {
-	    clError = clReleaseMemObject(ocl_ScaledDepth[i]);
-	    checkErr(clError, "clReleaseMem");
+		if (ocl_ScaledDepth[i])
+			clReleaseMemObject(ocl_ScaledDepth[i]);
 		ocl_ScaledDepth[i] = NULL;
-	  }
-	  if (ocl_inputVertex[i]) {
-	    clError = clReleaseMemObject(ocl_inputVertex[i]);
-	    checkErr(clError, "clReleaseMem");
+		if (ocl_inputVertex[i])
+			clReleaseMemObject(ocl_inputVertex[i]);
 		ocl_inputVertex[i] = NULL;
-	  }
-	  if (ocl_inputNormal[i]) {
-	    clError = clReleaseMemObject(ocl_inputNormal[i]);
-	    checkErr(clError, "clReleaseMem");
+		if (ocl_inputNormal[i])
+			clReleaseMemObject(ocl_inputNormal[i]);
 		ocl_inputNormal[i] = NULL;
 	}
-	}
-	if (ocl_ScaledDepth) {
+	if (ocl_ScaledDepth)
 		free(ocl_ScaledDepth);
 	ocl_ScaledDepth = NULL;
-	}
-	if (ocl_inputVertex) {
+	if (ocl_inputVertex)
 		free(ocl_inputVertex);
 	ocl_inputVertex = NULL;
-	}
-	if (ocl_inputNormal) {
+	if (ocl_inputNormal)
 		free(ocl_inputNormal);
 	ocl_inputNormal = NULL;
-	}
 
-	if (ocl_FloatDepth) {
-	  clError = clReleaseMemObject(ocl_FloatDepth);
-	  checkErr(clError, "clReleaseMem");
+	if (ocl_FloatDepth)
+		clReleaseMemObject(ocl_FloatDepth);
 	ocl_FloatDepth = NULL;
-	}
-	if (ocl_vertex) {
-	 clError = 	clReleaseMemObject(ocl_vertex);
-		checkErr(clError, "clReleaseMem");
+
+	if (ocl_vertex)
+		clReleaseMemObject(ocl_vertex);
 	ocl_vertex = NULL;
-	}
-	if (ocl_normal) {
-	   clError = clReleaseMemObject(ocl_normal);
-	  checkErr(clError, "clReleaseMem");
+	if (ocl_normal)
+		clReleaseMemObject(ocl_normal);
 	ocl_normal = NULL;
-	}
-	if (ocl_trackingResult) {
-	 clError = 	clReleaseMemObject(ocl_trackingResult);
-		checkErr(clError, "clReleaseMem");
+	if (ocl_trackingResult)
+		clReleaseMemObject(ocl_trackingResult);
 	ocl_trackingResult = NULL;
-	}
-	if (ocl_gaussian) {
-	 clError = 	clReleaseMemObject(ocl_gaussian);
-		checkErr(clError, "clReleaseMem");
+	if (ocl_gaussian)
+		clReleaseMemObject(ocl_gaussian);
 	ocl_gaussian = NULL;
-	}
-	if (ocl_volume_data) {
-	 clError = 	clReleaseMemObject(ocl_volume_data);
-		checkErr(clError, "clReleaseMem");
+	if (ocl_volume_data)
+		clReleaseMemObject(ocl_volume_data);
 	ocl_volume_data = NULL;
-	}
-	if (ocl_depth_buffer) {
-	 clError = 	clReleaseMemObject(ocl_depth_buffer);
-		checkErr(clError, "clReleaseMem");
+	if (ocl_depth_buffer)
+		clReleaseMemObject(ocl_depth_buffer);
 	ocl_depth_buffer = NULL;
-	}
-	if(ocl_output_render_buffer) {
-	     clError = clReleaseMemObject(ocl_output_render_buffer);
-	    checkErr(clError, "clReleaseMem");
+	if(ocl_output_render_buffer)
+	    clReleaseMemObject(ocl_output_render_buffer);
 	ocl_output_render_buffer = NULL;
-	}
-	if (ocl_reduce_output_buffer) {
-	 clError = 	clReleaseMemObject(ocl_reduce_output_buffer);
-		checkErr(clError, "clReleaseMem");
+
+	if (ocl_reduce_output_buffer)
+		clReleaseMemObject(ocl_reduce_output_buffer);
 	ocl_reduce_output_buffer = NULL;
-	}
+
 	RELEASE_KERNEL(mm2meters_ocl_kernel);
 	RELEASE_KERNEL(bilateralFilter_ocl_kernel);
 	RELEASE_KERNEL(halfSampleRobustImage_ocl_kernel);
@@ -280,26 +248,9 @@ Kfusion::~Kfusion() {
 	RELEASE_KERNEL(renderVolume_ocl_kernel);
 	RELEASE_KERNEL(renderDepth_ocl_kernel);
 	RELEASE_KERNEL(renderTrack_ocl_kernel);
-	RELEASE_KERNEL(initVolume_ocl_kernel);
-
-	mm2meters_ocl_kernel = NULL ;
-	bilateralFilter_ocl_kernel = NULL;
-	halfSampleRobustImage_ocl_kernel = NULL;
-	depth2vertex_ocl_kernel = NULL;
-	vertex2normal_ocl_kernel = NULL;
-	track_ocl_kernel = NULL;
-	reduce_ocl_kernel = NULL;
-	integrate_ocl_kernel = NULL;
-	raycast_ocl_kernel = NULL;
-	renderVolume_ocl_kernel = NULL;
-	renderLight_ocl_kernel = NULL;
-	renderTrack_ocl_kernel = NULL;
-	renderDepth_ocl_kernel = NULL;
-
-	computationSizeBkp = make_uint2(0, 0);
-	outputImageSizeBkp = make_uint2(0, 0);
 
 	clean();
+
 }
 
 bool updatePoseKernel(Matrix4 & pose, const float * output,
@@ -593,7 +544,7 @@ bool Kfusion::preprocessing(const uint16_t * inputDepth, const uint2 inSize) {
 bool Kfusion::tracking(float4 k, float icp_threshold, uint tracking_rate,
 		uint frame) {
 
-	if ((frame % tracking_rate) != 0)
+	if (frame % tracking_rate != 0)
 		return false;
 
 	// half sample the input depth maps into the pyramid levels

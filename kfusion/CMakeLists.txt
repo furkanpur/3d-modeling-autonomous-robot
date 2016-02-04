@@ -8,7 +8,6 @@ find_package(CUDA   )
 find_package(GLUT   )
 find_package(OpenGL )
 find_package(OpenNI2)
-find_package(PAPI)
 
 find_package(PkgConfig)
 find_package(Qt5Core)
@@ -63,7 +62,7 @@ set(kfusion_cuda_srcs
 	src/cuda/kernels.cu
 	thirdparty/kfusion.h
 	)
-   	
+	
     cuda_add_library(${appname}-cuda    STATIC  ${kfusion_cuda_srcs} OPTIONS -O3 )
 	target_link_libraries(${appname}-cuda   ${common_libraries})	
     add_version(${appname} cuda    "" "")

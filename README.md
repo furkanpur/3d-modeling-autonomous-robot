@@ -1,19 +1,42 @@
-# README #
-3D Modeling of a Scene with an Autonomous Robot
+# 3D Modeling of a Scene with an Autonomous Robot
 
-Abstract—In today’s technology, the popularity of the robotic systems is getting increased due to the fact that they facilitate Daily life and that they are becoming more functionality. In linewith it, the robots that are cheap and easy to obtain are getting crucial. In the current study, a robot was created using materials cheap and easy to provide. After that, an autonomous navigation algorithm was designed and a 3D modeling system was formed with KinectFusion algorithm using an ASUS Xtion camera, which is able to give a rapid depth map, on a graphic card with an embedded NVIDIA Jetson TK1 having a rapid graphic processor. Then, this was integrated on the robot. In this way, it was aimed to create an autonomous robot being able to give a 3 dimensional model of the scene by moving autonomously and without striking the obstacle around.
+### Abstract
+In today’s technology, the popularity of the robotic systems is getting increased due to the fact that they facilitate Daily life and that they are becoming more functionality. In linewith it, the robots that are cheap and easy to obtain are getting crucial. In the current study, a robot was created using materials cheap and easy to provide. After that, an autonomous navigation algorithm was designed and a 3D modeling system was formed with KinectFusion algorithm using an ASUS Xtion camera, which is able to give a rapid depth map, on a graphic card with an embedded NVIDIA Jetson TK1 having a rapid graphic processor. Then, this was integrated on the robot. In this way, it was aimed to create an autonomous robot being able to give a 3 dimensional model of the scene by moving autonomously and without striking the obstacle around.
 
-# Installation #
+If you can find more following paper:
 
-### Dependencies ###
+http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7495911&isnumber=7495673
 
-#### Required ####
+```
+S. F. Pür, M. Kasap and Ö. Yılmaz, "3D modeling of a scene with an autonomous robot," 2016 24th Signal Processing and Communication Application Conference (SIU), Zonguldak, 2016, pp. 1001-1004.
+doi: 10.1109/SIU.2016.7495911
+```
+
+Bibtex entry:
+```
+@INPROCEEDINGS {7495911,
+    author = { S.F.Pür and M.Kasap and Ö.Yılmaz},
+    booktitle = {2016 24 th Signal Processing and Communication Application Conference(SIU)},
+    title = {3 D modeling of a scene with an autonomous robot},
+    year = {2016},
+    pages = {1001 - 1004},
+    keywords = {control engineering computing;embedded systems;image sensors;path planning;robots;solid modelling;3 D modeling system;3 D scene modeling;ASUS Xtion camera;KinectFusion algorithm;autonomous navigation algorithm;autonomous robot;embedded NVIDIA Jetson TK1;graphic card;rapid depth map;robotic systems;Cameras;Navigation;Robot vision systems;Three - dimensional displays;Active Camera;Autonomous Navigation;Three Dimensional Modeling},
+    doi = {10.1109 / SIU .2016 .7495911},
+    month = {May},
+}
+```
+
+# Installation
+
+### Dependencies
+
+#### Required
 
 * TooN 2.2 : maths library.
 * CMake 2.8+ : building tool.
 * OpenCV 3.1 : computer vision library
 
-##### Install TooN and CMake#####
+##### Install TooN and CMake
 
 ```
 #!shell
@@ -27,7 +50,7 @@ sudo apt-get install cmake
 +(with Ubuntu, you might need to install the  build-essential package using ```sudo apt-get update && sudo apt-get install build-essential```)
  
 
-#### Optional ####
+#### Optional
 
 * OpenMP : for the OpenMP version
 * CUDA : for the CUDA version
@@ -39,7 +62,7 @@ sudo apt-get install cmake
 * PkgConfig / Qt5 (using OpenGL) : used by the Qt graphical interface (not fully required to get a graphical interface)
 * Python (numpy) : use by benchmarking scripts (`mean`, `max`, `min` functions)
 
-##### Installation of Qt5 with an ARM board (ie. Arndale, ODROID,...) #####
+##### Installation of Qt5 with an ARM board (ie. Arndale, ODROID,...)
 
 On ARM board, the default release of Qt5 was compile using OpenEGL, to use the Qt interface, you will have to compile Qt :
 
@@ -54,7 +77,7 @@ make
 make install
 ```
 
-##### Install OpenCV #####
+##### Install OpenCV
 
 ```
 [compiler] sudo apt-get install build-essential
@@ -79,7 +102,7 @@ cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local ..
 make -j7 # runs 7 jobs in parallel
 sudo make install
 ```
-### Compilation of Project ###
+### Compilation of Project
 
 Then simply build doing: 
 
@@ -100,4 +123,4 @@ CMAKE_PREFIX_PATH=~/.local/qt/ make
 https://www.youtube.com/playlist?list=PLypuuLR3edvwKqh6rEV9eOwGTwQGu1oQ9
 
 ### Note ###
-This project was adapted from SLAMBench Project. Please, visit https://github.com/pamela-project/slambench for more information
+This project was adapted from SLAMBench Project. Please, visit https://github.com/pamela-project/slambench for more information.

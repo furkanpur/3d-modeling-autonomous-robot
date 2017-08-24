@@ -3,7 +3,7 @@
 ### Abstract
 In today’s technology, the popularity of the robotic systems is getting increased due to the fact that they facilitate Daily life and that they are becoming more functionality. In linewith it, the robots that are cheap and easy to obtain are getting crucial. In the current study, a robot was created using materials cheap and easy to provide. After that, an autonomous navigation algorithm was designed and a 3D modeling system was formed with KinectFusion algorithm using an ASUS Xtion camera, which is able to give a rapid depth map, on a graphic card with an embedded NVIDIA Jetson TK1 having a rapid graphic processor. Then, this was integrated on the robot. In this way, it was aimed to create an autonomous robot being able to give a 3 dimensional model of the scene by moving autonomously and without striking the obstacle around.
 
-If you can find more following paper:
+You can find more following paper:
 
 http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7495911&isnumber=7495673
 
